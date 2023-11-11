@@ -75,18 +75,23 @@ docker-compose run web python manage.py test --verbosity 2
   `GET /api/cartitems/?cart=<cart_id>`
 
 - **Get user details of user with given user id**
+  
   `GET /api/users/<user_id>/`
 
 - **Get item details of item with given item id**
+  
   `GET /api/admin/items/<item_id>/`
 
 - **Get cart details of cart with given cart id**
+  
   `GET /api/carts/<cart_id>/`
 
 - **Get cart item details of cart item with given cart item id**
+  
   `GET /api/cartitems/<cart_item_id>/`
 
 - **Create a new user:**
+  
   `POST /api/users/`
 
   Request Body:
@@ -218,6 +223,7 @@ docker-compose run web python manage.py test --verbosity 2
   ```
 
 - **Delete a user:**
+  
   `DELETE /api/users/<user_id>/`
 
 - **Delete an item:**
@@ -225,7 +231,9 @@ docker-compose run web python manage.py test --verbosity 2
   `DELETE /api/admin/items/<item_id>/`
 
 - **Delete a cart:**
+  
   `DELETE /api/carts/<cart_id>/`
 
 - **Delete a cart item:**
+  
   `DELETE /api/cartitems/<cart_item_id>/`
