@@ -3,3 +3,5 @@ __pycache__
 *.pyo
 *.pyd
 db.sqlite3
+shopping_cart/migrations/
+shopping_cart/__pycache__/
