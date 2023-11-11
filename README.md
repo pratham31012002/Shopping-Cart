@@ -24,7 +24,7 @@ docker-compose up
 
 Access the API at `http://127.0.0.1:8000/` to manage users, items, carts, and cart items.
 
-**Running all tests**
+## Running all tests
 
 Run the following command:
 
