@@ -2,6 +2,6 @@ __pycache__
 *.pyc
 *.pyo
 *.pyd
+**/shopping_cart/migrations/*
+!**/shopping_cart/migrations/__init__.py
 db.sqlite3
-shopping_cart/migrations/
-shopping_cart/__pycache__/

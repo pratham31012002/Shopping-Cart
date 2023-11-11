@@ -5,8 +5,8 @@ db.sqlite3
 
 .env
 
-shopping_cart/migrations/
-shopping_cart/__pycache__
+shopping_cart/migrations/*
+!shopping_cart/migrations/__init__.py
 
 # Ignore compiled Python files
 __pycache__/

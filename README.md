@@ -6,20 +6,20 @@ An API for a e-commerce application created using the Django Rest Framework that
 - Allows users to create accounts (currently without authorization), create carts, view items in their cart, add items to their, modify their cart, and get the total cost of items in the cart
 
 **Prerequisites**
-- Docker
+- Docker and docker-compose
 
 **Building and Running the Application**
 
 Run the following command to build the image:
 
 ```
-docker build -t shopping-cart .
+docker-compose build
 ```
 
 Run the following command to run the application:
 
 ```
-docker run -p 8000:8000 shopping-cart
+docker-compose up
 ```
 
 **Running all tests**
@@ -27,5 +27,5 @@ docker run -p 8000:8000 shopping-cart
 Run the following command:
 
 ```
-docker run shopping-cart python manage.py test --verbosity 2
+docker-compose run web python manage.py test --verbosity 2
 ```
