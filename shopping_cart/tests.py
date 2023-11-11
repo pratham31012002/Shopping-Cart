@@ -206,5 +206,168 @@ class GetTotalCostForCart(BaseViewTest):
         self.assertEqual(response.data["total_cost"], expected)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-# Add test classes for POST, PUT, PATCH and DELETE methods
+class CreateItemTest(BaseViewTest):
+    def test_create_item(self):
+        """
+        Ensure we can create a new item
+        """
+        url = reverse('item-list')
+        data = {'name': 'New Item', 'description': 'New Description', 'price': 30.0}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Item.objects.count(), 3)
 
+class UpdateItemTest(BaseViewTest):
+    def test_update_item(self):
+        """
+        Ensure we can update an existing item
+        """
+        url = reverse('item-detail', kwargs={'pk': self.item1.id})
+        data = {'name': 'Updated Item', 'description': 'Updated Description', 'price': 40.0}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.item1.refresh_from_db()
+        self.assertEqual(self.item1.name, 'Updated Item')
+        self.assertEqual(self.item1.description, 'Updated Description')
+        self.assertEqual(self.item1.price, 40.0)
+
+class PatchItemTest(BaseViewTest):
+    def test_patch_item(self):
+        """
+        Ensure we can patch an existing item
+        """
+        url = reverse('item-detail', kwargs={'pk': self.item1.id})
+        data = {'price': 50.0}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.item1.refresh_from_db()
+        self.assertEqual(self.item1.price, 50.0)
+
+class DeleteItemTest(BaseViewTest):
+    def test_delete_item(self):
+        """
+        Ensure we can delete an existing item
+        """
+        url = reverse('item-detail', kwargs={'pk': self.item1.id})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Item.objects.count(), 1)
+
+        item1_found = Item.objects.all().filter(id = self.item1.id)
+        self.assertEqual(item1_found.count(), 0)
+
+class CreateUserTest(BaseViewTest):
+    def test_create_user(self):
+        """
+        Ensure we can create a new user
+        """
+        url = reverse('user-list')
+        data = {'username': 'newuser', 'password': 'newpassword'}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 3)
+        new_user_found = User.objects.all().filter(username='newuser')
+        self.assertEqual(new_user_found.count(), 1)
+
+class UpdateUserTest(BaseViewTest):
+    def test_update_user(self):
+        """
+        Ensure we can update an existing user
+        """
+        url = reverse('user-detail', kwargs={'pk': self.user1.id})
+        data = {'username': 'updateduser', 'password': 'updatedpassword'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user1.refresh_from_db()
+        self.assertEqual(self.user1.username, 'updateduser')
+        self.assertEqual(self.user1.password, 'updatedpassword')
+
+class PatchUserTest(BaseViewTest):
+    def test_patch_user(self):
+        """
+        Ensure we can patch an existing user
+        """
+        url = reverse('user-detail', kwargs={'pk': self.user1.id})
+        data = {'username': 'newusername'}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user1.refresh_from_db()
+        self.assertEqual(self.user1.username, 'newusername')
+
+class DeleteUserTest(BaseViewTest):
+    def test_delete_user(self):
+        """
+        Ensure we can delete an existing user
+        """
+        url = reverse('user-detail', kwargs={'pk': self.user1.id})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(User.objects.count(), 1)
+
+        user1_found = User.objects.all().filter(id=self.user1.id)
+        self.assertEqual(user1_found.count(), 0)
+
+class CreateCartTest(BaseViewTest):
+    def test_create_cart(self):
+        """
+        Ensure we can create a new cart
+        """
+        url = reverse('user-list')
+        data = {'username': 'newuser', 'password': 'newpassword'}
+        response = self.client.post(url, data, format='json')
+        new_user_id = response.data['id']
+        url = reverse('cart-list')
+        data = {'user': new_user_id}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Cart.objects.count(), 3)
+
+class CreateCartItemTest(BaseViewTest):
+    def test_create_cart_item_using_cart_id(self):
+        """
+        Ensure we can create a new cart item using cart_id
+        """
+        url = reverse('cartitem-list')
+        data = {'cart': self.cart2.id, 'item': self.item2.id, 'quantity': 3}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(CartItem.objects.all().filter(cart=self.cart1).count(), 2)
+        self.assertEqual(self.cart2.total_cost(), 110.0)
+
+    def test_create_cart_item_using_user_id(self):
+        """
+        Ensure we can create a new cart item using user_id
+        """
+        item3 = self.create_item("item3", "description3", 25.0)
+        url = reverse('cartitem-list')
+        data = {'user': self.user1.id, 'item': item3.id, 'quantity': 3}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(CartItem.objects.all().filter(cart=self.cart1).count(), 3)
+        self.assertEqual(CartItem.objects.all().filter(cart__user__id=self.user1.id).count(), 3)
+        self.assertEqual(self.cart1.total_cost(), 125.0)
+
+class PatchCartItemTest(BaseViewTest):
+    def test_patch_cart_item(self):
+        """
+        Ensure we can patch an existing cart item
+        """
+        url = reverse('cartitem-detail', kwargs={'pk': self.cart1_item1.id})
+        data = {'quantity': 5}
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.cart1_item1.refresh_from_db()
+        self.assertEqual(self.cart1_item1.quantity, 5)
+
+class DeleteCartItemTest(BaseViewTest):
+    def test_delete_cart_item(self):
+        """
+        Ensure we can delete an existing cart item
+        """
+        url = reverse('cartitem-detail', kwargs={'pk': self.cart1_item1.id})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(CartItem.objects.all().filter(cart=self.cart1_item1.cart).count(), 1)
+
+        cart1_item1_found = CartItem.objects.all().filter(id=self.cart1_item1.id)
+        self.assertEqual(cart1_item1_found.count(), 0)

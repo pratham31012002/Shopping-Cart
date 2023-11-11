@@ -9,3 +9,6 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+  test:
+    build: .
+    command: bash -c "python manage.py test --verbosity 2"
